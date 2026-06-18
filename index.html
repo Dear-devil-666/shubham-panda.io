@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Shubham Panda - Aspiring Cybersecurity Analyst | M.Sc. IT | Oracle OCI Certified | Cisco Cybersecurity Certified">
+<title>Shubham Panda | Cybersecurity Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+:root{
+--bg:#020810;--bg2:#040f18;--bg3:#071525;
+--green:#00ff88;--green2:#00cc66;--cyan:#00e5ff;
+--blue:#0066ff;--purple:#7c3aed;--pink:#ff006e;
+--orange:#ff6b35;--gold:#ffd700;--red:#ff4444;
+--text:#c8f0e0;--muted:#4a7a5a;--border:#0a2a1a;
+--mono:'Share Tech Mono',monospace;--display:'Orbitron',monospace;--body:'Rajdhani',sans-serif;
+--glow:0 0 20px rgba(0,255,136,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-weight:400;overflow-x:hidden;cursor:none;}
+#cursor{position:fixed;width:12px;height:12px;background:var(--green);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:transform .1s,background .2s;mix-blend-mode:screen;}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(0,255,136,.5);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:all .15s ease;}
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+.scanlines{position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.012) 2px,rgba(0,255,136,.012) 4px);pointer-events:none;z-index:9998;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:1rem 3rem;border-bottom:1px solid var(--border);background:rgba(2,8,16,.92);backdrop-filter:blur(20px);}
+.nav-logo{font-family:var(--display);font-size:.8rem;font-weight:900;color:var(--green);letter-spacing:.25em;text-shadow:var(--glow);}
+.nav-logo span{color:var(--cyan);}
+.nav-links{display:flex;gap:1.8rem;}
+.nav-links a{font-family:var(--mono);font-size:.68rem;color:var(--muted);text-decoration:none;letter-spacing:.12em;transition:color .2s;position:relative;}
+.nav-links a:hover{color:var(--green);}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--green);transition:width .3s;}
+.nav-links a:hover::after{width:100%;}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.status-badge{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.65rem;color:var(--muted);}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulseAnim 2s infinite;box-shadow:0 0 6px var(--green);}
+@keyframes pulseAnim{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* ADMIN TOGGLE */
+.admin-toggle{font-family:var(--mono);font-size:.62rem;padding:5px 12px;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.3);color:var(--orange);cursor:pointer;transition:all .2s;letter-spacing:.1em;}
+.admin-toggle:hover,.admin-toggle.active{background:var(--orange);color:var(--bg);}
+.admin-toggle.active{animation:adminPulse 2s infinite;}
+@keyframes adminPulse{0%,100%{box-shadow:0 0 6px var(--orange)}50%{box-shadow:0 0 18px var(--orange)}}
+
+/* EDIT BTN (appears on each section in admin mode) */
+.edit-btn{display:none;font-family:var(--mono);font-size:.6rem;padding:4px 12px;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.3);color:var(--orange);cursor:pointer;transition:all .2s;letter-spacing:.08em;margin-left:auto;align-items:center;gap:5px;}
+.edit-btn:hover{background:var(--orange);color:var(--bg);}
+body.admin-mode .edit-btn{display:inline-flex;}
+body.admin-mode .sec-line{display:flex;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(2,8,16,.92);backdrop-filter:blur(12px);z-index:10000;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid rgba(0,255,136,.2);width:100%;max-width:760px;margin:auto;animation:modalIn .3s ease;}
+@keyframes modalIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.6rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,.3);}
+.modal-title{font-family:var(--display);font-size:.9rem;color:var(--orange);letter-spacing:.15em;}
+.modal-close{font-family:var(--mono);font-size:1.2rem;color:var(--muted);cursor:pointer;background:none;border:none;transition:color .2s;line-height:1;}
+.modal-close:hover{color:var(--red);}
+.modal-body{padding:1.6rem;max-height:75vh;overflow-y:auto;}
+.modal-body::-webkit-scrollbar{width:3px;}
+.modal-body::-webkit-scrollbar-thumb{background:var(--green);}
+
+/* ADMIN ITEMS LIST */
+.admin-list{display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.5rem;}
+.admin-item{background:rgba(0,0,0,.3);border:1px solid var(--border);padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:1rem;transition:border-color .2s;}
+.admin-item:hover{border-color:rgba(0,255,136,.2);}
+.admin-item-content{flex:1;min-width:0;}
+.admin-item-title{font-family:var(--mono);font-size:.78rem;color:#fff;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.admin-item-sub{font-family:var(--mono);font-size:.62rem;color:var(--muted);}
+.admin-item-actions{display:flex;gap:6px;flex-shrink:0;}
+.adm-btn{font-family:var(--mono);font-size:.6rem;padding:4px 10px;border:1px solid;cursor:pointer;transition:all .2s;background:transparent;letter-spacing:.08em;}
+.adm-btn.edit{border-color:rgba(0,229,255,.3);color:var(--cyan);}
+.adm-btn.edit:hover{background:var(--cyan);color:var(--bg);}
+.adm-btn.del{border-color:rgba(255,68,68,.3);color:var(--red);}
+.adm-btn.del:hover{background:var(--red);color:#fff;}
+
+/* FORM */
+.admin-form{background:rgba(0,0,0,.2);border:1px solid var(--border);padding:1.4rem;}
+.admin-form-title{font-family:var(--mono);font-size:.72rem;color:var(--cyan);letter-spacing:.15em;margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:1px solid var(--border);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.form-row.full{grid-template-columns:1fr;}
+.f-group{display:flex;flex-direction:column;gap:5px;}
+.f-label{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.15em;}
+.f-input{background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.75rem;padding:.6rem .9rem;outline:none;transition:border-color .2s;width:100%;}
+.f-input:focus{border-color:var(--green);box-shadow:0 0 8px rgba(0,255,136,.1);}
+textarea.f-input{height:80px;resize:vertical;}
+select.f-input{cursor:pointer;}
+.form-actions{display:flex;gap:.8rem;margin-top:1.2rem;justify-content:flex-end;}
+.f-btn{font-family:var(--mono);font-size:.68rem;padding:.6rem 1.4rem;border:1px solid;cursor:pointer;transition:all .2s;background:transparent;letter-spacing:.1em;}
+.f-btn.save{border-color:var(--green);color:var(--green);}
+.f-btn.save:hover{background:var(--green);color:var(--bg);}
+.f-btn.cancel{border-color:var(--border);color:var(--muted);}
+.f-btn.cancel:hover{border-color:var(--muted);color:var(--text);}
+.f-btn.add-new{border-color:var(--orange);color:var(--orange);margin-bottom:1rem;}
+.f-btn.add-new:hover{background:var(--orange);color:var(--bg);}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:99999;font-family:var(--mono);font-size:.72rem;padding:.8rem 1.4rem;border:1px solid;animation:toastIn .3s ease;pointer-events:none;}
+.toast.success{background:rgba(0,255,136,.1);border-color:var(--green);color:var(--green);}
+.toast.error{background:rgba(255,68,68,.1);border-color:var(--red);color:var(--red);}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;padding:0 3rem;z-index:1;overflow:hidden;}
+.hero-content{flex:1;max-width:650px;}
+.hero-eyebrow{font-family:var(--mono);font-size:.72rem;color:var(--cyan);letter-spacing:.3em;margin-bottom:1.5rem;opacity:0;}
+.hero-name{font-family:var(--display);font-size:clamp(3rem,8vw,7rem);font-weight:900;line-height:.9;margin-bottom:1.5rem;opacity:0;}
+.hero-name .line1{color:#fff;display:block;}.hero-name .line2{color:var(--green);text-shadow:0 0 60px rgba(0,255,136,.4);display:block;}
+.hero-typed{font-family:var(--mono);font-size:clamp(.75rem,1.5vw,.95rem);color:var(--cyan);min-height:2rem;margin-bottom:2rem;opacity:0;}
+.hero-desc{font-size:1.05rem;line-height:1.9;color:rgba(200,240,224,.7);max-width:500px;margin-bottom:2.5rem;opacity:0;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;opacity:0;}
+.btn-glow{font-family:var(--mono);font-size:.72rem;letter-spacing:.15em;padding:.85rem 2rem;background:transparent;border:1px solid var(--green);color:var(--green);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .3s;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);}
+.btn-glow:hover{background:var(--green);color:var(--bg);box-shadow:var(--glow);transform:translateY(-2px);}
+.btn-glow.primary{background:linear-gradient(135deg,rgba(0,255,136,.15),rgba(0,229,255,.1));border-color:var(--cyan);color:var(--cyan);}
+.btn-glow.primary:hover{background:var(--cyan);color:var(--bg);}
+.hero-3d{flex:1;display:flex;align-items:center;justify-content:center;position:relative;}
+#hero-canvas{width:100%;max-width:500px;height:500px;}
+.float-icon{position:absolute;font-family:var(--mono);font-size:.65rem;padding:6px 12px;border:1px solid rgba(0,255,136,.2);color:var(--green);background:rgba(0,255,136,.05);animation:floatAnim 6s ease-in-out infinite;white-space:nowrap;}
+@keyframes floatAnim{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-12px) rotate(1deg)}}
+
+/* SECTIONS */
+section{padding:6rem 3rem;position:relative;z-index:1;max-width:1200px;margin:0 auto;}
+.sec-header{margin-bottom:3.5rem;}
+.sec-tag{font-family:var(--mono);font-size:.65rem;color:var(--green);letter-spacing:.3em;margin-bottom:.8rem;}
+.sec-title{font-family:var(--display);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;color:#fff;line-height:1.1;}
+.sec-title span{color:var(--green);text-shadow:var(--glow);}
+.sec-line{display:flex;align-items:center;gap:1rem;margin-top:1rem;}
+.sec-line::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+.sec-num{font-family:var(--mono);font-size:.65rem;color:var(--muted);}
+
+/* GLASS CARD */
+.glass-card{background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(0,229,255,.03));border:1px solid rgba(0,255,136,.12);backdrop-filter:blur(10px);transition:all .3s;}
+.glass-card:hover{border-color:rgba(0,255,136,.35);box-shadow:0 0 30px rgba(0,255,136,.08),inset 0 0 30px rgba(0,255,136,.02);transform:translateY(-4px);}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-bottom:4rem;}
+.stat-card{padding:2rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);transform:scaleX(0);transition:transform .4s;}
+.stat-card:hover::before{transform:scaleX(1);}
+.stat-num{font-family:var(--display);font-size:3rem;font-weight:900;color:var(--green);text-shadow:var(--glow);line-height:1;}
+.stat-label{font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:.2em;margin-top:.5rem;}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+.about-text{padding:2.5rem;}
+.about-text h3{font-family:var(--display);font-size:1.2rem;color:var(--cyan);margin-bottom:1rem;letter-spacing:.1em;}
+.about-text p{font-size:1rem;line-height:1.9;color:rgba(200,240,224,.75);margin-bottom:1rem;}
+.about-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:1.5rem;}
+.atag{font-family:var(--mono);font-size:.65rem;padding:4px 12px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);color:var(--green);letter-spacing:.1em;}
+.about-terminal{padding:0;overflow:hidden;}
+.t-bar{background:rgba(0,0,0,.4);padding:.5rem 1rem;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);}
+.t-dot{width:8px;height:8px;border-radius:50%;}
+.t-red{background:#ff5f57;}.t-yellow{background:#ffbd2e;}.t-gn{background:#28ca41;}
+.t-title{font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-left:auto;}
+.t-body{padding:1.2rem;font-family:var(--mono);font-size:.75rem;line-height:2.2;}
+.tp{color:var(--green);}.tc{color:#fff;}.to{color:var(--muted);}.tv{color:var(--cyan);}.ts{color:var(--green);}
+.tcursor{display:inline-block;width:8px;height:14px;background:var(--green);animation:blink 1s infinite;vertical-align:middle;}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* SKILLS */
+.skills-3d-container{position:relative;height:400px;margin-bottom:3rem;border:1px solid var(--border);background:rgba(0,0,0,.3);overflow:hidden;}
+#skill-canvas{width:100%;height:100%;}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.skill-group{padding:1.8rem;}
+.sg-title{font-family:var(--mono);font-size:.68rem;color:var(--cyan);letter-spacing:.2em;margin-bottom:1.2rem;display:flex;align-items:center;gap:8px;}
+.sg-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.skill-item{margin-bottom:1rem;}
+.skill-name{font-family:var(--mono);font-size:.75rem;color:var(--text);display:flex;justify-content:space-between;margin-bottom:5px;}
+.skill-pct{color:var(--green);}
+.skill-bar{height:4px;background:rgba(0,255,136,.1);position:relative;overflow:hidden;}
+.skill-fill{position:absolute;top:0;left:0;height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));width:0;transition:width 1.2s ease;}
+.skill-bar::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmer 2s infinite;}
+@keyframes shimmer{0%{left:-100%}100%{left:200%}}
+
+/* CERTS */
+.cert-filters{display:flex;gap:1rem;margin-bottom:2rem;flex-wrap:wrap;}
+.filter-btn{font-family:var(--mono);font-size:.65rem;padding:6px 16px;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s;letter-spacing:.1em;}
+.filter-btn.active,.filter-btn:hover{border-color:var(--green);color:var(--green);background:rgba(0,255,136,.08);}
+.certs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;}
+.cert-card{padding:1.6rem;position:relative;overflow:hidden;cursor:pointer;}
+.cert-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--cyan));}
+.cert-issuer-badge{display:inline-block;font-family:var(--mono);font-size:.6rem;padding:3px 10px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.2);color:var(--green);letter-spacing:.12em;margin-bottom:.8rem;}
+.cert-name{font-family:var(--body);font-size:.98rem;font-weight:600;color:#fff;margin-bottom:.6rem;line-height:1.4;}
+.cert-meta{font-family:var(--mono);font-size:.62rem;color:var(--muted);line-height:1.8;}
+.cert-verify{display:inline-block;margin-top:1rem;font-family:var(--mono);font-size:.62rem;color:var(--cyan);border-bottom:1px solid rgba(0,229,255,.3);cursor:pointer;transition:color .2s;}
+.cert-verify:hover{color:var(--green);}
+.cert-glow{position:absolute;top:-50%;right:-30%;width:200px;height:200px;background:radial-gradient(circle,rgba(0,255,136,.06),transparent 70%);pointer-events:none;}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:2rem;}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:linear-gradient(180deg,var(--green),var(--cyan),var(--purple));}
+.t-item{position:relative;padding:0 0 3rem 2.5rem;}
+.t-dot-outer{position:absolute;left:-8px;top:0;width:16px;height:16px;border:2px solid var(--green);border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;}
+.t-dot-inner{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulseAnim 2s infinite;}
+.t-card{padding:1.8rem;}
+.t-period{font-family:var(--mono);font-size:.65rem;color:var(--cyan);letter-spacing:.15em;margin-bottom:.6rem;}
+.t-role{font-family:var(--display);font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:.3rem;}
+.t-company{font-family:var(--mono);font-size:.72rem;color:var(--green);margin-bottom:1rem;}
+.t-resp{list-style:none;padding:0;}
+.t-resp li{font-size:.92rem;color:rgba(200,240,224,.7);padding:.3rem 0;padding-left:1rem;position:relative;}
+.t-resp li::before{content:'→';position:absolute;left:0;color:var(--green);}
+.t-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:1rem;}
+.ttag{font-family:var(--mono);font-size:.58rem;padding:3px 10px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.15);color:var(--cyan);}
+
+/* SOC */
+.soc-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;}
+.soc-card{padding:1.5rem;position:relative;overflow:hidden;}
+.soc-title{font-family:var(--mono);font-size:.65rem;color:var(--muted);letter-spacing:.2em;margin-bottom:1rem;}
+.threat-list{list-style:none;}
+.threat-item{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(0,255,136,.05);font-family:var(--mono);font-size:.68rem;}
+.threat-name{color:var(--text);}
+.threat-badge{padding:2px 8px;font-size:.58rem;}
+.badge-red{background:rgba(255,0,110,.15);border:1px solid rgba(255,0,110,.3);color:#ff6b6b;}
+.badge-yellow{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.25);color:var(--gold);}
+.badge-green{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.2);color:var(--green);}
+#soc-canvas{width:100%;height:200px;}
+.soc-bottom{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+.soc-mini{padding:1.2rem;text-align:center;}
+.soc-mini-num{font-family:var(--display);font-size:1.8rem;font-weight:900;color:var(--cyan);}
+.soc-mini-label{font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-top:4px;letter-spacing:.1em;}
+
+/* EDUCATION */
+.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+.edu-card{padding:2rem;}
+.edu-level{font-family:var(--mono);font-size:.62rem;color:var(--cyan);letter-spacing:.2em;margin-bottom:.8rem;}
+.edu-degree{font-family:var(--display);font-size:1rem;font-weight:700;color:#fff;margin-bottom:.4rem;line-height:1.3;}
+.edu-uni{font-family:var(--mono);font-size:.72rem;color:var(--green);margin-bottom:.5rem;}
+.edu-year{font-family:var(--mono);font-size:.65rem;color:var(--muted);}
+
+/* CONTACT */
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.contact-link{display:flex;align-items:center;gap:1rem;padding:1.2rem 1.5rem;text-decoration:none;transition:all .2s;margin-bottom:1rem;}
+.contact-link:hover{transform:translateX(6px);}
+.c-icon{width:40px;height:40px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--green);flex-shrink:0;}
+.c-label{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.15em;}
+.c-val{font-family:var(--mono);font-size:.8rem;color:var(--text);margin-top:2px;}
+.contact-form{padding:2rem;}
+.cf-title{font-family:var(--display);font-size:1rem;color:var(--cyan);margin-bottom:1.5rem;letter-spacing:.1em;}
+.cf-group{margin-bottom:1.2rem;}
+.cf-label{font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:.15em;display:block;margin-bottom:.4rem;}
+.cf-input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.8rem;padding:.7rem 1rem;outline:none;transition:border-color .2s;}
+.cf-input:focus{border-color:var(--green);box-shadow:0 0 10px rgba(0,255,136,.1);}
+textarea.cf-input{height:100px;resize:vertical;}
+.cf-submit{width:100%;padding:.9rem;background:linear-gradient(135deg,rgba(0,255,136,.15),rgba(0,229,255,.1));border:1px solid var(--green);color:var(--green);font-family:var(--mono);font-size:.75rem;letter-spacing:.2em;cursor:pointer;transition:all .3s;margin-top:.5rem;}
+.cf-submit:hover{background:var(--green);color:var(--bg);}
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2.5rem 3rem;display:flex;justify-content:space-between;align-items:center;max-width:100%;}
+.footer-logo{font-family:var(--display);font-size:.75rem;color:var(--green);letter-spacing:.2em;}
+.footer-text{font-family:var(--mono);font-size:.62rem;color:var(--muted);text-align:center;}
+.footer-text span{color:var(--green);}
+.fade-up{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
+.stagger-1{transition-delay:.1s;}.stagger-2{transition-delay:.2s;}.stagger-3{transition-delay:.3s;}.stagger-4{transition-delay:.4s;}
+#loader{position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.loader-logo{font-family:var(--display);font-size:2rem;font-weight:900;color:var(--green);text-shadow:var(--glow);margin-bottom:2rem;letter-spacing:.3em;}
+.loader-bar-wrap{width:300px;height:2px;background:rgba(0,255,136,.1);position:relative;overflow:hidden;}
+.loader-bar{position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,var(--green),var(--cyan),transparent);animation:loadAnim 1.5s ease forwards;}
+@keyframes loadAnim{0%{left:-100%}100%{left:100%}}
+.loader-text{font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-top:1rem;letter-spacing:.2em;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--green);}
+@media(max-width:900px){nav{padding:1rem 1.5rem;}.nav-links{display:none;}.hero{padding:6rem 1.5rem 3rem;flex-direction:column;}.hero-3d{width:100%;height:300px;}#hero-canvas{height:300px;}section{padding:4rem 1.5rem;}.stats-row{grid-template-columns:repeat(2,1fr);}.about-grid,.edu-grid,.contact-wrap{grid-template-columns:1fr;}.skills-grid{grid-template-columns:1fr 1fr;}.soc-grid{grid-template-columns:1fr;}.soc-bottom{grid-template-columns:repeat(2,1fr);}footer{flex-direction:column;gap:1rem;text-align:center;}}
+@media(max-width:600px){.skills-grid{grid-template-columns:1fr;}.certs-grid{grid-template-columns:1fr;}.form-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+<div class="scanlines"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">SP://INIT</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <div class="loader-text" id="loader-text">INITIALIZING SYSTEMS...</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">EDIT SECTION</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">SP<span>://</span>CYBER</div>
+  <div class="nav-links">
+    <a href="#about">about</a><a href="#skills">skills</a><a href="#certs">certs</a>
+    <a href="#experience">experience</a><a href="#soc">soc_lab</a><a href="#education">education</a><a href="#contact">contact</a>
+  </div>
+  <div class="nav-right">
+    <div class="status-badge"><div class="pulse"></div><span>OPEN TO HIRE</span></div>
+    <button class="admin-toggle" id="admin-toggle" onclick="toggleAdmin()">⚙ ADMIN</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="top">
+  <div class="hero-content">
+    <div class="hero-eyebrow">// CYBERSECURITY ANALYST IN TRAINING</div>
+    <div class="hero-name"><span class="line1">SHUBHAM</span><span class="line2">PANDA</span></div>
+    <div class="hero-typed"><span id="typed-text"></span><span class="tcursor"></span></div>
+    <p class="hero-desc" id="hero-desc-text">Aspiring Cybersecurity Analyst | M.Sc. IT Student | Oracle OCI AI Certified | Cisco Certified | Deloitte & TATA Cyber Simulations | From Classroom to Cloud & Cyber.</p>
+    <div class="hero-btns">
+      <a href="#contact" class="btn-glow primary">⚡ HIRE ME</a>
+      <a href="#certs" class="btn-glow">🏅 CREDENTIALS</a>
+      <a href="https://www.linkedin.com/in/shubham-panda-it26/" target="_blank" class="btn-glow">💼 LINKEDIN</a>
+      <a href="https://drive.google.com/file/d/1qam5OMNoMJUsTayLvlyb1u6b0zLlkHD5/view?usp=sharing" target="_blank" class="btn-glow">⬇ RESUME</a>
+    </div>
+  </div>
+  <div class="hero-3d">
+    <canvas id="hero-canvas"></canvas>
+    <div class="float-icon" style="top:15%;left:5%;animation-delay:0s">🛡️ OCI CERTIFIED</div>
+    <div class="float-icon" style="top:30%;right:0%;animation-delay:1s">🔐 IAM EXPERT</div>
+    <div class="float-icon" style="bottom:30%;left:0%;animation-delay:2s">🌐 CISCO NETACAD</div>
+    <div class="float-icon" style="bottom:15%;right:5%;animation-delay:1.5s">🐍 PYTHON DEV</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<section style="padding-top:2rem;padding-bottom:2rem;">
+  <div class="stats-row">
+    <div class="stat-card glass-card fade-up stagger-1"><div class="stat-num" id="stat-certs">11</div><div class="stat-label">CERTIFICATIONS</div></div>
+    <div class="stat-card glass-card fade-up stagger-2"><div class="stat-num" id="stat-internships">3</div><div class="stat-label">INTERNSHIPS</div></div>
+    <div class="stat-card glass-card fade-up stagger-3"><div class="stat-num" id="stat-domains">5</div><div class="stat-label">TECH DOMAINS</div></div>
+    <div class="stat-card glass-card fade-up stagger-4"><div class="stat-num">2026</div><div class="stat-label">BATCH YEAR</div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="sec-header fade-up">
+    <div class="sec-tag">// 01 — ABOUT</div>
+    <div class="sec-title">WHO AM <span>I</span></div>
+    <div class="sec-line">
+      <div class="sec-num">PROFILE.JSON</div>
+      <button class="edit-btn" onclick="openAboutModal()">✎ EDIT ABOUT</button>
+    </div>
+  </div>
+  <div class="about-grid">
+    <div class="about-text glass-card fade-up">
+      <h3 id="about-title">M.SC. IT STUDENT & CYBER ENTHUSIAST</h3>
+      <div id="about-paragraphs">
+        <p>Passionate about building secure digital environments. Currently pursuing M.Sc. Information Technology with a deep focus on Cybersecurity, AI, and Cloud Computing.</p>
+        <p>Hands-on experience through internships at PlaceMantra, CodeAlpha, and Codec Technologies — building real-world skills in Python Development and Web Development.</p>
+        <p>Oracle OCI AI Certified | Cisco Cybersecurity Certified | Deloitte & TATA Forage Simulations completed. Continuously learning, certifying, and growing.</p>
+      </div>
+      <div class="about-tags" id="about-tags-container">
+        <span class="atag">CYBERSECURITY</span><span class="atag">PYTHON</span><span class="atag">ORACLE OCI</span><span class="atag">CISCO</span><span class="atag">AI/ML</span><span class="atag">IAM</span><span class="atag">NETWORK SECURITY</span><span class="atag">POWER BI</span><span class="atag">DSA</span><span class="atag">WEB DEV</span>
+      </div>
+    </div>
+    <div class="about-terminal glass-card fade-up stagger-2">
+      <div class="t-bar"><div class="t-dot t-red"></div><div class="t-dot t-yellow"></div><div class="t-dot t-gn"></div><div class="t-title">profile.sh — bash</div></div>
+      <div class="t-body" id="terminal-body">
+        <div><span class="tp">$ </span><span class="tc">cat profile.json</span></div>
+        <div><span class="to">{</span></div>
+        <div>&nbsp;&nbsp;<span class="to">"name":</span> <span class="tv" id="tb-name">"Shubham Panda"</span>,</div>
+        <div>&nbsp;&nbsp;<span class="to">"degree":</span> <span class="tv" id="tb-degree">"M.Sc. IT"</span>,</div>
+        <div>&nbsp;&nbsp;<span class="to">"location":</span> <span class="tv" id="tb-location">"Indore, MP, India"</span>,</div>
+        <div>&nbsp;&nbsp;<span class="to">"focus":</span> <span class="tv" id="tb-focus">"Cybersecurity + AI"</span>,</div>
+        <div>&nbsp;&nbsp;<span class="to">"certifications":</span> <span class="ts" id="tb-certs">11</span>,</div>
+        <div>&nbsp;&nbsp;<span class="to">"internships":</span> <span class="ts" id="tb-intern">3</span>,</div>
+        <div>&nbsp;&nbsp;<span class="to">"status":</span> <span class="ts">"open_to_work"</span></div>
+        <div><span class="to">}</span></div>
+        <div style="margin-top:8px"><span class="tp">$ </span><span class="tc">verify --certs all</span></div>
+        <div><span class="ts">✓ Oracle OCI: VERIFIED</span></div>
+        <div><span class="ts">✓ Cisco NetAcad: VERIFIED</span></div>
+        <div><span class="ts">✓ Deloitte Forage: VERIFIED</span></div>
+        <div><span class="tp">$ </span><div class="tcursor" style="display:inline-block"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="sec-header fade-up">
+    <div class="sec-tag">// 02 — SKILLS</div>
+    <div class="sec-title">TECHNICAL <span>ARSENAL</span></div>
+    <div class="sec-line">
+      <div class="sec-num">SKILLS.MAP</div>
+      <button class="edit-btn" onclick="openSkillsModal()">✎ EDIT SKILLS</button>
+    </div>
+  </div>
+  <div class="skills-3d-container fade-up"><canvas id="skill-canvas"></canvas><div style="position:absolute;top:1rem;left:1rem;font-family:var(--mono);font-size:.62rem;color:var(--muted);">// INTERACTIVE SKILL SPHERE — DRAG TO ROTATE</div></div>
+  <div class="skills-grid" id="skills-grid">
+    <!-- Rendered by JS -->
+  </div>
+</section>
+
+<!-- CERTS -->
+<section id="certs">
+  <div class="sec-header fade-up">
+    <div class="sec-tag">// 03 — CERTIFICATIONS</div>
+    <div class="sec-title">VERIFIED <span>CREDENTIALS</span></div>
+    <div class="sec-line">
+      <div class="sec-num" id="certs-count-label">10 BADGES EARNED</div>
+      <button class="edit-btn" onclick="openCertsModal()">✎ MANAGE CERTS</button>
+    </div>
+  </div>
+  <div class="cert-filters fade-up">
+    <button class="filter-btn active" data-filter="all">ALL</button>
+    <button class="filter-btn" data-filter="cyber">CYBERSECURITY</button>
+    <button class="filter-btn" data-filter="cloud">CLOUD & AI</button>
+    <button class="filter-btn" data-filter="sim">JOB SIMULATION</button>
+    <button class="filter-btn" data-filter="dev">DEVELOPMENT</button>
+  </div>
+  <div class="certs-grid" id="certs-grid"></div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="sec-header fade-up">
+    <div class="sec-tag">// 04 — EXPERIENCE</div>
+    <div class="sec-title">WORK <span>HISTORY</span></div>
+    <div class="sec-line">
+      <div class="sec-num" id="exp-count-label">4 POSITIONS</div>
+      <button class="edit-btn" onclick="openExpModal()">✎ MANAGE EXPERIENCE</button>
+    </div>
+  </div>
+  <div class="timeline" id="timeline-container"></div>
+</section>
+
+<!-- SOC LAB -->
+<section id="soc" style="max-width:100%;padding:5rem 3rem;">
+  <div style="max-width:1200px;margin:0 auto;">
+  <div class="sec-header fade-up">
+    <div class="sec-tag">// 05 — CYBERSECURITY LAB</div>
+    <div class="sec-title">SOC <span>DASHBOARD</span></div>
+    <div class="sec-line"><div class="sec-num">LIVE SIMULATION</div></div>
+  </div>
+  <div class="soc-grid fade-up">
+    <div class="soc-card glass-card"><div class="soc-title">// THREAT MONITOR</div><canvas id="soc-canvas"></canvas></div>
+    <div class="soc-card glass-card"><div class="soc-title">// ACTIVE THREATS</div>
+      <ul class="threat-list">
+        <li class="threat-item"><span class="threat-name">SQL Injection</span><span class="threat-badge badge-red">HIGH</span></li>
+        <li class="threat-item"><span class="threat-name">Phishing Attempt</span><span class="threat-badge badge-red">HIGH</span></li>
+        <li class="threat-item"><span class="threat-name">Port Scan</span><span class="threat-badge badge-yellow">MED</span></li>
+        <li class="threat-item"><span class="threat-name">Brute Force</span><span class="threat-badge badge-yellow">MED</span></li>
+        <li class="threat-item"><span class="threat-name">XSS Probe</span><span class="threat-badge badge-yellow">MED</span></li>
+        <li class="threat-item"><span class="threat-name">Malware Scan</span><span class="threat-badge badge-green">LOW</span></li>
+        <li class="threat-item"><span class="threat-name">DNS Anomaly</span><span class="threat-badge badge-green">LOW</span></li>
+      </ul>
+    </div>
+    <div class="soc-card glass-card"><div class="soc-title">// SYSTEM STATUS</div>
+      <div style="display:flex;flex-direction:column;gap:1rem;margin-top:.5rem;">
+        <div><div style="font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-bottom:5px;">FIREWALL</div><div style="height:6px;background:rgba(0,255,136,.1);"><div style="width:95%;height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));"></div></div><div style="font-family:var(--mono);font-size:.6rem;color:var(--green);margin-top:3px;">95% PROTECTED</div></div>
+        <div><div style="font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-bottom:5px;">IDS/IPS</div><div style="height:6px;background:rgba(0,255,136,.1);"><div style="width:88%;height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));"></div></div><div style="font-family:var(--mono);font-size:.6rem;color:var(--cyan);margin-top:3px;">88% ACTIVE</div></div>
+        <div><div style="font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-bottom:5px;">ENCRYPTION</div><div style="height:6px;background:rgba(0,255,136,.1);"><div style="width:100%;height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));"></div></div><div style="font-family:var(--mono);font-size:.6rem;color:var(--purple);margin-top:3px;">100% AES-256</div></div>
+        <div><div style="font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-bottom:5px;">PATCH STATUS</div><div style="height:6px;background:rgba(0,255,136,.1);"><div style="width:72%;height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));"></div></div><div style="font-family:var(--mono);font-size:.6rem;color:var(--orange);margin-top:3px;">72% UPDATED</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="soc-bottom fade-up">
+    <div class="soc-mini glass-card"><div class="soc-mini-num" id="packets">0</div><div class="soc-mini-label">PACKETS/SEC</div></div>
+    <div class="soc-mini glass-card"><div class="soc-mini-num" id="blocked">0</div><div class="soc-mini-label">THREATS BLOCKED</div></div>
+    <div class="soc-mini glass-card"><div class="soc-mini-num" id="uptime">99.9%</div><div class="soc-mini-label">UPTIME</div></div>
+    <div class="soc-mini glass-card"><div class="soc-mini-num" id="nodes">0</div><div class="soc-mini-label">NODES MONITORED</div></div>
+  </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="sec-header fade-up">
+    <div class="sec-tag">// 06 — EDUCATION</div>
+    <div class="sec-title">ACADEMIC <span>JOURNEY</span></div>
+    <div class="sec-line">
+      <div class="sec-num">EDUCATION.LOG</div>
+      <button class="edit-btn" onclick="openEduModal()">✎ MANAGE EDUCATION</button>
+    </div>
+  </div>
+  <div class="edu-grid" id="edu-grid"></div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="sec-header fade-up">
+    <div class="sec-tag">// 07 — CONTACT</div>
+    <div class="sec-title">GET IN <span>TOUCH</span></div>
+    <div class="sec-line">
+      <div class="sec-num">CONNECT.SH</div>
+      <button class="edit-btn" onclick="openContactModal()">✎ EDIT CONTACT</button>
+    </div>
+  </div>
+  <div class="contact-wrap">
+    <div id="contact-links-container" class="fade-up"></div>
+    <div class="contact-form glass-card fade-up stagger-2">
+      <div class="cf-title">// SEND MESSAGE</div>
+      <div class="cf-group"><label class="cf-label">NAME</label><input class="cf-input" type="text" placeholder="Your name"></div>
+      <div class="cf-group"><label class="cf-label">EMAIL</label><input class="cf-input" type="email" placeholder="your@email.com"></div>
+      <div class="cf-group"><label class="cf-label">SUBJECT</label><input class="cf-input" type="text" placeholder="Internship / Collaboration / Query"></div>
+      <div class="cf-group"><label class="cf-label">MESSAGE</label><textarea class="cf-input" placeholder="Your message..."></textarea></div>
+      <button class="cf-submit" onclick="handleContact()">⚡ TRANSMIT MESSAGE</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">SP://CYBER</div>
+  <div class="footer-text"><div>SHUBHAM PANDA · M.Sc. IT · ASPIRING CYBERSECURITY ANALYST</div><div style="margin-top:4px">FROM <span>CLASSROOM</span> TO <span>CLOUD & CYBER</span> · © 2026</div></div>
+  <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);">BUILT WITH PASSION 🛡️</div>
+</footer>
+
+<script>
+// ============================================================
+// DATA STORE — all portfolio data, persisted to localStorage
+// ============================================================
+const DEFAULT_DATA = {
+  about: {
+    title: "M.SC. IT STUDENT & CYBER ENTHUSIAST",
+    p1: "Passionate about building secure digital environments. Currently pursuing M.Sc. Information Technology with a deep focus on Cybersecurity, AI, and Cloud Computing.",
+    p2: "Hands-on experience through internships at PlaceMantra, CodeAlpha, and Codec Technologies — building real-world skills in Python Development and Web Development.",
+    p3: "Oracle OCI AI Certified | Cisco Cybersecurity Certified | Deloitte & TATA Forage Simulations completed. Continuously learning, certifying, and growing.",
+    tags: "CYBERSECURITY,PYTHON,ORACLE OCI,CISCO,AI/ML,IAM,NETWORK SECURITY,POWER BI,DSA,WEB DEV",
+    name: "Shubham Panda", degree: "M.Sc. IT", location: "Raipur, Chhattisgarh, India", focus: "Cybersecurity + AI"
+  },
+  skills: [
+    { group: "🛡️ CYBERSECURITY", items: [
+      {name:"Network Security",pct:78},{name:"IAM & Access Mgmt",pct:75},{name:"Threat Analysis",pct:72},{name:"Vulnerability Assess.",pct:65},{name:"Security Awareness",pct:85}
+    ]},
+    { group: "🐍 PROGRAMMING", items: [
+      {name:"Python",pct:80},{name:"C / DSA",pct:70},{name:"C++ / C#.NET",pct:60},{name:"HTML/CSS/JS",pct:75},{name:"SQL / MySQL",pct:65}
+    ]},
+    { group: "☁️ CLOUD & AI", items: [
+      {name:"Oracle OCI",pct:75},{name:"Generative AI",pct:70},{name:"Prompt Engineering",pct:75},{name:"Power BI",pct:65},{name:"Hadoop/Big Data",pct:50}
+    ]}
+  ],
+  certs: [
+    {issuer:"ORACLE",name:"OCI 2025 Certified AI Foundations Associate",meta:"Oracle University · Aug 28, 2025\nID: 321980823OCI25AICFA",cat:"cloud"},
+    {issuer:"CISCO",name:"Introduction to Cybersecurity — Verified Badge",meta:"Cisco Networking Academy · Jun 07, 2026\nID: fff70c40-a752-491a-86e8",cat:"cyber"},
+    {issuer:"DELOITTE × FORAGE",name:"Cyber Job Simulation — Practical Tasks",meta:"Forage Platform · Feb 01, 2026\nCode: BiWYAbb9bG7hTutBM",cat:"sim"},
+    {issuer:"TATA × FORAGE",name:"Cybersecurity Analyst Job Simulation",meta:"IAM · Strategy · Platform Integration\nMay 12, 2026 · Code: ZYing2x692RgarQWX",cat:"sim"},
+    {issuer:"IBM",name:"Cybersecurity Fundamentals (Show What You Know)",meta:"IBM SkillsBuild · Sep 12, 2025\nID: ILB-ZKRZQMXVJRJX3BJK",cat:"cyber"},
+    {issuer:"GOOGLE CLOUD",name:"Introduction to Generative AI Studio",meta:"Google Cloud × Simplilearn · Aug 17, 2025\nCode: 8804657",cat:"cloud"},
+    {issuer:"MICROSOFT",name:"Prompt Engineering with GitHub Copilot",meta:"Microsoft × Simplilearn · Aug 20, 2025\nCode: 8825108",cat:"dev"},
+    {issuer:"SIMPLILEARN",name:"Introduction to Cyber Security",meta:"Simplilearn SkillUP · Aug 17, 2025\nCode: 8800944",cat:"cyber"},
+    {issuer:"SKILL COURSE",name:"Power BI Micro Course",meta:"ISO 9001:2015 Certified · Mar 19, 2026\nID: SC-EB2951C1F8",cat:"dev"},
+    {issuer:"TCS iON",name:"NQT Sample Test — IT (Grade A · Pass)",meta:"TCS iON Platform · May 13, 2026\nID: 32248469",cat:"dev"}
+  ],
+  experience: [
+    {period:"MAY 2026 — MAY 2026",role:"Cybersecurity Analyst (Simulation)",company:"// TATA CONSULTANCY × FORAGE",resp:["IAM fundamentals and strategy assessment","Crafted custom IAM solutions for enterprise scenarios","Platform integration workflows and security protocols"],tags:"IAM,CYBERSECURITY,FORAGE",dotColor:"var(--green)"},
+    {period:"JUL 2025 — AUG 2025",role:"Python Programming Intern",company:"// CODEALPHA · MSME CERTIFIED PROGRAM",resp:["Python scripting and automation task development","Logic-building projects and problem-solving","Virtual internship with MSME certification"],tags:"PYTHON,AUTOMATION,MSME,VIRTUAL",dotColor:"var(--cyan)"},
+    {period:"JUL 2025 — AUG 2025",role:"Python Developer Intern",company:"// CODEC TECHNOLOGIES PVT. LTD. · AICTE & ICAC APPROVED",resp:["Python development and software engineering workflows","Problem solving and algorithmic thinking","AICTE & Google for Education Partner certified program"],tags:"PYTHON,AICTE,GOOGLE EDU PARTNER",dotColor:"var(--purple)"},
+    {period:"JUN 2025 — AUG 2025",role:"Web Development Intern",company:"// PLACEMANTRA · AICTE & MSME CERTIFIED",resp:["Developed responsive websites using HTML, CSS, JavaScript","Improved UI/UX for real-world client projects","Commendable performance — sincere and diligent execution"],tags:"HTML/CSS,JAVASCRIPT,UI/UX,AICTE",dotColor:"var(--orange)"}
+  ],
+  education: [
+    {level:"POSTGRADUATE · CURRENT",degree:"Master of Science in Information Technology (M.Sc. IT)",uni:"Pt. Ravishankar Shukla University",year:"2024 – 2026 · 2nd Semester · Focus: Cybersecurity & AI",tags:"DATA MINING,CNCS,IoT,HADOOP,C#.NET"},
+    {level:"UNDERGRADUATE · COMPLETED",degree:"Bachelor of Science in Computer Science (B.Sc. CS)",uni:"Lt. Raja Virendra Bahadur Singh Govt. College",year:"2021 – 2024 · Foundation in CS & Programming",tags:"C++,DBMS,DSA,NETWORKING"}
+  ],
+  contact: [
+    {icon:"💼",label:"LINKEDIN",val:"shubham-panda-it26",href:"https://www.linkedin.com/in/shubham-panda-it26/"},
+    {icon:"📧",label:"EMAIL",val:"shubhampanda91@gmail.com",href:"mailto:shubhampanda91@gmail.com"},
+    {icon:"🐙",label:"GITHUB",val:"github.com/shubham-panda",href:"https://github.com/Dear-devil-666"},
+    {icon:"📍",label:"LOCATION",val:"Raipur, Chhattisgarh, India",href:"#"},
+    {icon:"⬇",label:"RESUME",val:"Download CV / Resume",href:"#"}
+  ]
+};
+
+function loadData(){
+  try{
+    const saved=localStorage.getItem('sp_portfolio');
+    return saved?JSON.parse(saved):JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }catch(e){return JSON.parse(JSON.stringify(DEFAULT_DATA));}
+}
+function saveData(d){
+  localStorage.setItem('sp_portfolio',JSON.stringify(d));
+}
+let PD=loadData();
+
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+function renderAll(){renderAbout();renderSkills();renderCerts();renderExperience();renderEducation();renderContact();updateStats();}
+
+function renderAbout(){
+  const a=PD.about;
+  const el=document.getElementById('about-title');if(el)el.textContent=a.title;
+  const paras=document.getElementById('about-paragraphs');
+  if(paras)paras.innerHTML=`<p>${a.p1}</p><p>${a.p2}</p><p>${a.p3}</p>`;
+  const tc=document.getElementById('about-tags-container');
+  if(tc)tc.innerHTML=a.tags.split(',').map(t=>`<span class="atag">${t.trim()}</span>`).join('');
+  // Terminal
+  ['tb-name','tb-degree','tb-location','tb-focus'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const map={'tb-name':a.name,'tb-degree':a.degree,'tb-location':a.location,'tb-focus':a.focus};
+    el.textContent=`"${map[id]}"`;
+  });
+  const tc2=document.getElementById('tb-certs');const ti=document.getElementById('tb-intern');
+  if(tc2)tc2.textContent=PD.certs.length;
+  if(ti)ti.textContent=PD.experience.length;
+}
+
+function renderSkills(){
+  const grid=document.getElementById('skills-grid');
+  if(!grid)return;
+  grid.innerHTML=PD.skills.map((g,gi)=>`
+    <div class="skill-group glass-card fade-up stagger-${gi+1}">
+      <div class="sg-title">${g.group}</div>
+      ${g.items.map(s=>`
+        <div class="skill-item">
+          <div class="skill-name"><span>${s.name}</span><span class="skill-pct">${s.pct}%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-w="${s.pct}"></div></div>
+        </div>`).join('')}
+    </div>`).join('');
+  reobserve();
+}
+
+function renderCerts(){
+  const grid=document.getElementById('certs-grid');
+  if(!grid)return;
+  grid.innerHTML=PD.certs.map((c,i)=>`
+    <div class="cert-card glass-card fade-up" data-cat="${c.cat}" style="display:block;">
+      <div class="cert-glow"></div>
+      <div class="cert-issuer-badge">${c.issuer}</div>
+      <div class="cert-name">${c.name}</div>
+      <div class="cert-meta">${c.meta.replace(/\n/g,'<br>')}</div>
+      <div class="cert-verify">✓ VERIFIED · VERIFY →</div>
+    </div>`).join('');
+  const lbl=document.getElementById('certs-count-label');
+  if(lbl)lbl.textContent=`${PD.certs.length} BADGES EARNED`;
+  reobserve();
+}
+
+function renderExperience(){
+  const tc=document.getElementById('timeline-container');
+  if(!tc)return;
+  tc.innerHTML=PD.experience.map((e,i)=>`
+    <div class="t-item fade-up">
+      <div class="t-dot-outer"><div class="t-dot-inner" style="background:${e.dotColor||'var(--green)'}"></div></div>
+      <div class="t-card glass-card">
+        <div class="t-period">${e.period}</div>
+        <div class="t-role">${e.role}</div>
+        <div class="t-company">${e.company}</div>
+        <ul class="t-resp">${e.resp.map(r=>`<li>${r}</li>`).join('')}</ul>
+        <div class="t-tags">${e.tags.split(',').map(t=>`<span class="ttag">${t.trim()}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+  const lbl=document.getElementById('exp-count-label');
+  if(lbl)lbl.textContent=`${PD.experience.length} POSITIONS`;
+  reobserve();
+}
+
+function renderEducation(){
+  const grid=document.getElementById('edu-grid');
+  if(!grid)return;
+  grid.innerHTML=PD.education.map(e=>`
+    <div class="edu-card glass-card fade-up">
+      <div class="edu-level">${e.level}</div>
+      <div class="edu-degree">${e.degree}</div>
+      <div class="edu-uni">// ${e.uni}</div>
+      <div class="edu-year">${e.year}</div>
+      <div class="about-tags" style="margin-top:1rem;">${e.tags.split(',').map(t=>`<span class="atag">${t.trim()}</span>`).join('')}</div>
+    </div>`).join('');
+  reobserve();
+}
+
+function renderContact(){
+  const cc=document.getElementById('contact-links-container');
+  if(!cc)return;
+  cc.innerHTML=PD.contact.map(c=>`
+    <a class="contact-link glass-card" href="${c.href}" target="${c.href.startsWith('http')?'_blank':'_self'}">
+      <div class="c-icon">${c.icon}</div>
+      <div><div class="c-label">${c.label}</div><div class="c-val">${c.val}</div></div>
+    </a>`).join('');
+}
+
+function updateStats(){
+  const sc=document.getElementById('stat-certs');const si=document.getElementById('stat-internships');
+  if(sc)sc.textContent=PD.certs.length;
+  if(si)si.textContent=PD.experience.length;
+}
+
+// ============================================================
+// ADMIN MODE
+// ============================================================
+let adminMode=false;
+function toggleAdmin(){
+  adminMode=!adminMode;
+  document.body.classList.toggle('admin-mode',adminMode);
+  const btn=document.getElementById('admin-toggle');
+  btn.classList.toggle('active',adminMode);
+  btn.textContent=adminMode?'✕ EXIT ADMIN':'⚙ ADMIN';
+  showToast(adminMode?'Admin mode ON — edit buttons visible':'Admin mode OFF','success');
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function openModal(title,html){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=html;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+function showToast(msg,type='success'){
+  const t=document.createElement('div');t.className=`toast ${type}`;t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2800);
+}
+
+// ============================================================
+// ABOUT MODAL
+// ============================================================
+function openAboutModal(){
+  const a=PD.about;
+  openModal('✎ EDIT ABOUT SECTION',`
+    <div class="admin-form">
+      <div class="admin-form-title">// PROFILE INFO</div>
+      <div class="form-row">
+        <div class="f-group"><label class="f-label">FULL NAME</label><input class="f-input" id="a-name" value="${a.name}"></div>
+        <div class="f-group"><label class="f-label">DEGREE</label><input class="f-input" id="a-degree" value="${a.degree}"></div>
+      </div>
+      <div class="form-row">
+        <div class="f-group"><label class="f-label">LOCATION</label><input class="f-input" id="a-location" value="${a.location}"></div>
+        <div class="f-group"><label class="f-label">FOCUS AREA</label><input class="f-input" id="a-focus" value="${a.focus}"></div>
+      </div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">SECTION TITLE</label><input class="f-input" id="a-title" value="${a.title}"></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">PARAGRAPH 1</label><textarea class="f-input" id="a-p1">${a.p1}</textarea></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">PARAGRAPH 2</label><textarea class="f-input" id="a-p2">${a.p2}</textarea></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">PARAGRAPH 3</label><textarea class="f-input" id="a-p3">${a.p3}</textarea></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">SKILL TAGS (comma separated)</label><input class="f-input" id="a-tags" value="${a.tags}"></div></div>
+      <div class="form-actions">
+        <button class="f-btn cancel" onclick="closeModal()">CANCEL</button>
+        <button class="f-btn save" onclick="saveAbout()">✓ SAVE CHANGES</button>
+      </div>
+    </div>`);
+}
+function saveAbout(){
+  PD.about={...PD.about,
+    name:v('a-name'),degree:v('a-degree'),location:v('a-location'),focus:v('a-focus'),
+    title:v('a-title'),p1:v('a-p1'),p2:v('a-p2'),p3:v('a-p3'),tags:v('a-tags')
+  };
+  saveData(PD);renderAbout();closeModal();showToast('✓ About section updated!');
+}
+
+// ============================================================
+// SKILLS MODAL
+// ============================================================
+function openSkillsModal(){
+  openModal('✎ MANAGE SKILLS',buildSkillsHTML());
+}
+function buildSkillsHTML(){
+  return `
+    <div class="admin-list" id="skills-admin-list">
+      ${PD.skills.map((g,gi)=>`
+        <div class="admin-item">
+          <div class="admin-item-content">
+            <div class="admin-item-title">${g.group}</div>
+            <div class="admin-item-sub">${g.items.length} skills: ${g.items.map(i=>i.name).join(', ')}</div>
+          </div>
+          <div class="admin-item-actions">
+            <button class="adm-btn edit" onclick="editSkillGroup(${gi})">✎ EDIT</button>
+            <button class="adm-btn del" onclick="delSkillGroup(${gi})">✕ DELETE</button>
+          </div>
+        </div>`).join('')}
+    </div>
+    <button class="f-btn add-new" onclick="addSkillGroup()">+ ADD SKILL GROUP</button>`;
+}
+function editSkillGroup(gi){
+  const g=PD.skills[gi];
+  document.getElementById('modal-body').innerHTML=`
+    <button class="f-btn cancel" onclick="openSkillsModal()" style="margin-bottom:1rem;">← BACK</button>
+    <div class="admin-form">
+      <div class="admin-form-title">// EDIT GROUP: ${g.group}</div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">GROUP TITLE (with emoji)</label><input class="f-input" id="sg-title" value="${g.group}"></div></div>
+      <div id="skill-items-edit">
+        ${g.items.map((s,si)=>`
+          <div class="form-row" id="si-${si}">
+            <div class="f-group"><label class="f-label">SKILL NAME</label><input class="f-input si-name" data-si="${si}" value="${s.name}"></div>
+            <div class="f-group"><label class="f-label">PROFICIENCY %</label>
+              <input class="f-input si-pct" data-si="${si}" type="number" min="0" max="100" value="${s.pct}">
+            </div>
+            <button class="adm-btn del" style="align-self:flex-end;margin-bottom:0" onclick="removeSkillItem(${gi},${si})">✕</button>
+          </div>`).join('')}
+      </div>
+      <button class="f-btn add-new" style="margin-top:.8rem" onclick="addSkillItem(${gi})">+ ADD SKILL</button>
+      <div class="form-actions">
+        <button class="f-btn cancel" onclick="openSkillsModal()">CANCEL</button>
+        <button class="f-btn save" onclick="saveSkillGroup(${gi})">✓ SAVE GROUP</button>
+      </div>
+    </div>`;
+}
+function saveSkillGroup(gi){
+  PD.skills[gi].group=v('sg-title');
+  const names=document.querySelectorAll('.si-name');
+  const pcts=document.querySelectorAll('.si-pct');
+  PD.skills[gi].items=[];
+  names.forEach((n,i)=>{PD.skills[gi].items.push({name:n.value,pct:parseInt(pcts[i].value)||50});});
+  saveData(PD);renderSkills();openSkillsModal();showToast('✓ Skill group saved!');
+}
+function addSkillGroup(){
+  PD.skills.push({group:'🔧 NEW GROUP',items:[{name:'New Skill',pct:50}]});
+  saveData(PD);renderSkills();editSkillGroup(PD.skills.length-1);
+}
+function delSkillGroup(gi){
+  if(confirm('Delete this skill group?')){PD.skills.splice(gi,1);saveData(PD);renderSkills();openSkillsModal();showToast('Skill group deleted','error');}
+}
+function addSkillItem(gi){
+  PD.skills[gi].items.push({name:'New Skill',pct:50});saveData(PD);editSkillGroup(gi);
+}
+function removeSkillItem(gi,si){
+  PD.skills[gi].items.splice(si,1);saveData(PD);editSkillGroup(gi);
+}
+
+// ============================================================
+// CERTS MODAL
+// ============================================================
+function openCertsModal(){
+  openModal('✎ MANAGE CERTIFICATIONS',buildCertsHTML());
+}
+function buildCertsHTML(){
+  return `
+    <div class="admin-list">
+      ${PD.certs.map((c,i)=>`
+        <div class="admin-item">
+          <div class="admin-item-content">
+            <div class="admin-item-title">${c.issuer} — ${c.name}</div>
+            <div class="admin-item-sub">${c.cat.toUpperCase()} · ${c.meta.split('\n')[0]}</div>
+          </div>
+          <div class="admin-item-actions">
+            <button class="adm-btn edit" onclick="editCert(${i})">✎ EDIT</button>
+            <button class="adm-btn del" onclick="delCert(${i})">✕ DEL</button>
+          </div>
+        </div>`).join('')}
+    </div>
+    <button class="f-btn add-new" onclick="editCert(-1)">+ ADD CERTIFICATE</button>`;
+}
+function editCert(i){
+  const c=i>=0?PD.certs[i]:{issuer:'',name:'',meta:'',cat:'cyber'};
+  const isNew=i<0;
+  document.getElementById('modal-body').innerHTML=`
+    <button class="f-btn cancel" onclick="openCertsModal()" style="margin-bottom:1rem;">← BACK</button>
+    <div class="admin-form">
+      <div class="admin-form-title">${isNew?'// ADD CERTIFICATE':'// EDIT CERTIFICATE'}</div>
+      <div class="form-row">
+        <div class="f-group"><label class="f-label">ISSUER</label><input class="f-input" id="c-issuer" value="${c.issuer}" placeholder="e.g. CISCO"></div>
+        <div class="f-group"><label class="f-label">CATEGORY</label>
+          <select class="f-input" id="c-cat">
+            <option value="cyber"${c.cat==='cyber'?' selected':''}>CYBERSECURITY</option>
+            <option value="cloud"${c.cat==='cloud'?' selected':''}>CLOUD & AI</option>
+            <option value="sim"${c.cat==='sim'?' selected':''}>JOB SIMULATION</option>
+            <option value="dev"${c.cat==='dev'?' selected':''}>DEVELOPMENT</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">CERTIFICATE NAME</label><input class="f-input" id="c-name" value="${c.name}" placeholder="Full certificate name"></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">META (date, ID — use newline for 2nd line)</label><textarea class="f-input" id="c-meta">${c.meta}</textarea></div></div>
+      <div class="form-actions">
+        <button class="f-btn cancel" onclick="openCertsModal()">CANCEL</button>
+        <button class="f-btn save" onclick="saveCert(${i})">${isNew?'+ ADD':'✓ SAVE'}</button>
+      </div>
+    </div>`;
+}
+function saveCert(i){
+  const nc={issuer:v('c-issuer'),name:v('c-name'),meta:v('c-meta'),cat:v('c-cat')};
+  if(i<0)PD.certs.push(nc);else PD.certs[i]=nc;
+  saveData(PD);renderCerts();openCertsModal();showToast(i<0?'✓ Certificate added!':'✓ Certificate updated!');
+}
+function delCert(i){
+  if(confirm(`Delete "${PD.certs[i].name}"?`)){PD.certs.splice(i,1);saveData(PD);renderCerts();openCertsModal();showToast('Certificate deleted','error');}
+}
+
+// ============================================================
+// EXPERIENCE MODAL
+// ============================================================
+function openExpModal(){
+  openModal('✎ MANAGE WORK HISTORY',buildExpHTML());
+}
+function buildExpHTML(){
+  return `
+    <div class="admin-list">
+      ${PD.experience.map((e,i)=>`
+        <div class="admin-item">
+          <div class="admin-item-content">
+            <div class="admin-item-title">${e.role}</div>
+            <div class="admin-item-sub">${e.company} · ${e.period}</div>
+          </div>
+          <div class="admin-item-actions">
+            <button class="adm-btn edit" onclick="editExp(${i})">✎ EDIT</button>
+            <button class="adm-btn del" onclick="delExp(${i})">✕ DEL</button>
+          </div>
+        </div>`).join('')}
+    </div>
+    <button class="f-btn add-new" onclick="editExp(-1)">+ ADD EXPERIENCE</button>`;
+}
+function editExp(i){
+  const e=i>=0?PD.experience[i]:{period:'',role:'',company:'',resp:[''],tags:'',dotColor:'var(--green)'};
+  const isNew=i<0;
+  document.getElementById('modal-body').innerHTML=`
+    <button class="f-btn cancel" onclick="openExpModal()" style="margin-bottom:1rem;">← BACK</button>
+    <div class="admin-form">
+      <div class="admin-form-title">${isNew?'// ADD EXPERIENCE':'// EDIT EXPERIENCE'}</div>
+      <div class="form-row">
+        <div class="f-group"><label class="f-label">PERIOD</label><input class="f-input" id="e-period" value="${e.period}" placeholder="JAN 2025 — MAR 2025"></div>
+        <div class="f-group"><label class="f-label">DOT COLOR</label>
+          <select class="f-input" id="e-dot">
+            <option value="var(--green)"${e.dotColor==='var(--green)'?' selected':''}>GREEN</option>
+            <option value="var(--cyan)"${e.dotColor==='var(--cyan)'?' selected':''}>CYAN</option>
+            <option value="var(--purple)"${e.dotColor==='var(--purple)'?' selected':''}>PURPLE</option>
+            <option value="var(--orange)"${e.dotColor==='var(--orange)'?' selected':''}>ORANGE</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">ROLE / TITLE</label><input class="f-input" id="e-role" value="${e.role}"></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">COMPANY (include // prefix)</label><input class="f-input" id="e-company" value="${e.company}"></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">RESPONSIBILITIES (one per line)</label><textarea class="f-input" id="e-resp" style="height:100px">${e.resp.join('\n')}</textarea></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">TAGS (comma separated)</label><input class="f-input" id="e-tags" value="${e.tags}"></div></div>
+      <div class="form-actions">
+        <button class="f-btn cancel" onclick="openExpModal()">CANCEL</button>
+        <button class="f-btn save" onclick="saveExp(${i})">${isNew?'+ ADD':'✓ SAVE'}</button>
+      </div>
+    </div>`;
+}
+function saveExp(i){
+  const ne={period:v('e-period'),role:v('e-role'),company:v('e-company'),resp:v('e-resp').split('\n').filter(r=>r.trim()),tags:v('e-tags'),dotColor:v('e-dot')};
+  if(i<0)PD.experience.push(ne);else PD.experience[i]=ne;
+  saveData(PD);renderExperience();openExpModal();showToast(i<0?'✓ Experience added!':'✓ Experience updated!');
+}
+function delExp(i){
+  if(confirm(`Delete "${PD.experience[i].role}"?`)){PD.experience.splice(i,1);saveData(PD);renderExperience();openExpModal();showToast('Experience deleted','error');}
+}
+
+// ============================================================
+// EDUCATION MODAL
+// ============================================================
+function openEduModal(){
+  openModal('✎ MANAGE EDUCATION',buildEduHTML());
+}
+function buildEduHTML(){
+  return `
+    <div class="admin-list">
+      ${PD.education.map((e,i)=>`
+        <div class="admin-item">
+          <div class="admin-item-content">
+            <div class="admin-item-title">${e.degree}</div>
+            <div class="admin-item-sub">${e.uni} · ${e.year}</div>
+          </div>
+          <div class="admin-item-actions">
+            <button class="adm-btn edit" onclick="editEdu(${i})">✎ EDIT</button>
+            <button class="adm-btn del" onclick="delEdu(${i})">✕ DEL</button>
+          </div>
+        </div>`).join('')}
+    </div>
+    <button class="f-btn add-new" onclick="editEdu(-1)">+ ADD EDUCATION</button>`;
+}
+function editEdu(i){
+  const e=i>=0?PD.education[i]:{level:'',degree:'',uni:'',year:'',tags:''};
+  const isNew=i<0;
+  document.getElementById('modal-body').innerHTML=`
+    <button class="f-btn cancel" onclick="openEduModal()" style="margin-bottom:1rem;">← BACK</button>
+    <div class="admin-form">
+      <div class="admin-form-title">${isNew?'// ADD EDUCATION':'// EDIT EDUCATION'}</div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">LEVEL (e.g. POSTGRADUATE · CURRENT)</label><input class="f-input" id="ed-level" value="${e.level}"></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">DEGREE / PROGRAM</label><input class="f-input" id="ed-degree" value="${e.degree}"></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">UNIVERSITY</label><input class="f-input" id="ed-uni" value="${e.uni}"></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">YEAR / DETAILS</label><input class="f-input" id="ed-year" value="${e.year}"></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">TAGS (comma separated)</label><input class="f-input" id="ed-tags" value="${e.tags}"></div></div>
+      <div class="form-actions">
+        <button class="f-btn cancel" onclick="openEduModal()">CANCEL</button>
+        <button class="f-btn save" onclick="saveEdu(${i})">${isNew?'+ ADD':'✓ SAVE'}</button>
+      </div>
+    </div>`;
+}
+function saveEdu(i){
+  const ne={level:v('ed-level'),degree:v('ed-degree'),uni:v('ed-uni'),year:v('ed-year'),tags:v('ed-tags')};
+  if(i<0)PD.education.push(ne);else PD.education[i]=ne;
+  saveData(PD);renderEducation();openEduModal();showToast(i<0?'✓ Education added!':'✓ Education updated!');
+}
+function delEdu(i){
+  if(confirm(`Delete "${PD.education[i].degree}"?`)){PD.education.splice(i,1);saveData(PD);renderEducation();openEduModal();showToast('Education deleted','error');}
+}
+
+// ============================================================
+// CONTACT MODAL
+// ============================================================
+function openContactModal(){
+  openModal('✎ MANAGE CONTACT INFO',buildContactHTML());
+}
+function buildContactHTML(){
+  return `
+    <div class="admin-list">
+      ${PD.contact.map((c,i)=>`
+        <div class="admin-item">
+          <div class="admin-item-content">
+            <div class="admin-item-title">${c.icon} ${c.label}</div>
+            <div class="admin-item-sub">${c.val}</div>
+          </div>
+          <div class="admin-item-actions">
+            <button class="adm-btn edit" onclick="editContact(${i})">✎ EDIT</button>
+            <button class="adm-btn del" onclick="delContact(${i})">✕ DEL</button>
+          </div>
+        </div>`).join('')}
+    </div>
+    <button class="f-btn add-new" onclick="editContact(-1)">+ ADD CONTACT</button>`;
+}
+function editContact(i){
+  const c=i>=0?PD.contact[i]:{icon:'🔗',label:'',val:'',href:''};
+  const isNew=i<0;
+  document.getElementById('modal-body').innerHTML=`
+    <button class="f-btn cancel" onclick="openContactModal()" style="margin-bottom:1rem;">← BACK</button>
+    <div class="admin-form">
+      <div class="admin-form-title">${isNew?'// ADD CONTACT':'// EDIT CONTACT'}</div>
+      <div class="form-row">
+        <div class="f-group"><label class="f-label">ICON (emoji)</label><input class="f-input" id="ct-icon" value="${c.icon}" style="font-size:1.2rem"></div>
+        <div class="f-group"><label class="f-label">LABEL</label><input class="f-input" id="ct-label" value="${c.label}" placeholder="e.g. LINKEDIN"></div>
+      </div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">DISPLAY VALUE</label><input class="f-input" id="ct-val" value="${c.val}" placeholder="e.g. your-username"></div></div>
+      <div class="form-row full"><div class="f-group"><label class="f-label">URL / HREF</label><input class="f-input" id="ct-href" value="${c.href}" placeholder="https://..."></div></div>
+      <div class="form-actions">
+        <button class="f-btn cancel" onclick="openContactModal()">CANCEL</button>
+        <button class="f-btn save" onclick="saveContact(${i})">${isNew?'+ ADD':'✓ SAVE'}</button>
+      </div>
+    </div>`;
+}
+function saveContact(i){
+  const nc={icon:v('ct-icon'),label:v('ct-label'),val:v('ct-val'),href:v('ct-href')};
+  if(i<0)PD.contact.push(nc);else PD.contact[i]=nc;
+  saveData(PD);renderContact();openContactModal();showToast(i<0?'✓ Contact added!':'✓ Contact updated!');
+}
+function delContact(i){
+  if(confirm(`Delete "${PD.contact[i].label}"?`)){PD.contact.splice(i,1);saveData(PD);renderContact();openContactModal();showToast('Contact deleted','error');}
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function v(id){const el=document.getElementById(id);return el?el.value:'';}
+
+// ============================================================
+// SCROLL OBSERVER
+// ============================================================
+let obs;
+function reobserve(){
+  if(obs)obs.disconnect();
+  obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        e.target.querySelectorAll('.skill-fill').forEach(b=>{b.style.width=b.dataset.w+'%';});
+      }
+    });
+  },{threshold:.1});
+  document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+}
+
+// ============================================================
+// CERT FILTER
+// ============================================================
+document.addEventListener('click',function(e){
+  if(e.target.classList.contains('filter-btn')){
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active');
+    const f=e.target.dataset.filter;
+    document.querySelectorAll('.cert-card').forEach(c=>{
+      c.style.display=(f==='all'||c.dataset.cat===f)?'block':'none';
+    });
+  }
+});
+
+// ============================================================
+// CURSOR
+// ============================================================
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);}animRing();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(2)';cursor.style.background='var(--cyan)';});
+  el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';cursor.style.background='var(--green)';});
+});
+
+// ============================================================
+// BG PARTICLES
+// ============================================================
+(function(){
+  const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);
+  const pts=Array.from({length:120},()=>({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,a:Math.random()}));
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=c.width;if(p.x>c.width)p.x=0;if(p.y<0)p.y=c.height;if(p.y>c.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,255,136,${p.a*.4})`;ctx.fill();});
+    pts.forEach((p,i)=>{pts.slice(i+1).forEach(q=>{const d=Math.hypot(p.x-q.x,p.y-q.y);if(d<120){ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.strokeStyle=`rgba(0,229,255,${(1-d/120)*.08})`;ctx.lineWidth=.5;ctx.stroke();}});});
+    requestAnimationFrame(draw);
+  }draw();
+})();
+
+// ============================================================
+// THREE.JS — HERO & SKILL SPHERE
+// ============================================================
+(function(){
+  if(typeof THREE==='undefined')return;
+  const c=document.getElementById('hero-canvas');
+  const W=c.clientWidth||500,H=500;
+  const renderer=new THREE.WebGLRenderer({canvas:c,alpha:true,antialias:true});
+  renderer.setSize(W,H);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(60,W/H,.1,100);camera.position.z=5;
+  const geo=new THREE.TorusKnotGeometry(1.5,.4,200,20,2,3);
+  const mat=new THREE.MeshPhongMaterial({color:0x00ff88,wireframe:true,transparent:true,opacity:.7});
+  const mesh=new THREE.Mesh(geo,mat);scene.add(mesh);
+  const sgeo=new THREE.SphereGeometry(.6,32,32);
+  const smat=new THREE.MeshPhongMaterial({color:0x00e5ff,wireframe:true,transparent:true,opacity:.5});
+  const sphere=new THREE.Mesh(sgeo,smat);scene.add(sphere);
+  scene.add(new THREE.AmbientLight(0x001a0a,.5));
+  const pl=new THREE.PointLight(0x00ff88,2,10);pl.position.set(3,3,3);scene.add(pl);
+  const pl2=new THREE.PointLight(0x00e5ff,1.5,10);pl2.position.set(-3,-3,3);scene.add(pl2);
+  let mx2=0,my2=0;
+  document.addEventListener('mousemove',e=>{mx2=(e.clientX/window.innerWidth-.5)*2;my2=(e.clientY/window.innerHeight-.5)*2;});
+  function animate(){requestAnimationFrame(animate);mesh.rotation.x+=.005+my2*.002;mesh.rotation.y+=.008+mx2*.002;sphere.rotation.y-=.01;renderer.render(scene,camera);}
+  animate();
+})();
+
+(function(){
+  if(typeof THREE==='undefined')return;
+  const c=document.getElementById('skill-canvas');
+  const W=c.parentElement.offsetWidth||800,H=400;
+  const renderer=new THREE.WebGLRenderer({canvas:c,alpha:true,antialias:true});
+  renderer.setSize(W,H);
+  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(70,W/H,.1,100);camera.position.z=5;
+  const skills=PD.skills.flatMap(g=>g.items.map(i=>i.name));
+  const colors=[0x00ff88,0x00e5ff,0x7c3aed,0xff6b35,0xffd700,0xff006e,0x0066ff,0x00cc66,0xff6b35,0x00e5ff,0x7c3aed,0x00ff88,0xffd700,0x0066ff,0x00e5ff];
+  skills.forEach((s,i)=>{
+    const phi=Math.acos(-1+2*i/skills.length),theta=Math.sqrt(skills.length*Math.PI)*phi;
+    const geo=new THREE.SphereGeometry(.15,12,12);
+    const mat=new THREE.MeshPhongMaterial({color:colors[i%colors.length],transparent:true,opacity:.85});
+    const m=new THREE.Mesh(geo,mat);
+    m.position.set(3.5*Math.cos(theta)*Math.sin(phi),3.5*Math.sin(theta)*Math.sin(phi),3.5*Math.cos(phi));
+    scene.add(m);
+    const lg=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),m.position]);
+    scene.add(new THREE.Line(lg,new THREE.LineBasicMaterial({color:colors[i%colors.length],transparent:true,opacity:.15})));
+  });
+  scene.add(new THREE.AmbientLight(0xffffff,.3));scene.add(new THREE.PointLight(0x00ff88,2,20));
+  let isDragging=false,prevX=0;
+  c.addEventListener('mousedown',e=>{isDragging=true;prevX=e.clientX;});
+  window.addEventListener('mouseup',()=>isDragging=false);
+  c.addEventListener('mousemove',e=>{if(isDragging){scene.rotation.y+=(e.clientX-prevX)*.01;prevX=e.clientX;}});
+  function animate(){requestAnimationFrame(animate);if(!isDragging)scene.rotation.y+=.003;scene.rotation.x+=.001;renderer.render(scene,camera);}
+  animate();
+})();
+
+// ============================================================
+// SOC DASHBOARD
+// ============================================================
+(function(){
+  const c=document.getElementById('soc-canvas');if(!c)return;
+  c.width=c.parentElement.offsetWidth-48;c.height=200;
+  const ctx=c.getContext('2d');
+  const data=Array(60).fill(0).map(()=>Math.floor(Math.random()*80+20));
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    const w=c.width,h=c.height,step=w/data.length;
+    ctx.strokeStyle='rgba(0,255,136,.05)';ctx.lineWidth=1;
+    for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(0,h/5*i);ctx.lineTo(w,h/5*i);ctx.stroke();}
+    const grad=ctx.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0,'rgba(0,255,136,.3)');grad.addColorStop(1,'rgba(0,255,136,0)');
+    ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(0,h);
+    data.forEach((d,i)=>ctx.lineTo(i*step,h-d/100*h*.85));
+    ctx.lineTo(w,h);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='#00ff88';ctx.lineWidth=2;ctx.shadowBlur=8;ctx.shadowColor='#00ff88';
+    ctx.beginPath();data.forEach((d,i)=>i===0?ctx.moveTo(0,h-d/100*h*.85):ctx.lineTo(i*step,h-d/100*h*.85));
+    ctx.stroke();ctx.shadowBlur=0;
+    data.shift();data.push(Math.floor(Math.random()*80+20));
+    requestAnimationFrame(draw);
+  }draw();
+})();
+let blk=0;
+setInterval(()=>{
+  const pkt=Math.floor(Math.random()*500+800);blk+=Math.floor(Math.random()*3);const nd=Math.floor(Math.random()*5+22);
+  const pe=document.getElementById('packets'),be=document.getElementById('blocked'),ne=document.getElementById('nodes');
+  if(pe)pe.textContent=pkt;if(be)be.textContent=blk;if(ne)ne.textContent=nd;
+},1000);
+
+// ============================================================
+// TYPED EFFECT
+// ============================================================
+const phrases=['Aspiring Cybersecurity Analyst','Oracle OCI AI Certified','Cisco NetAcad Verified','Python Developer','From Classroom to Cloud & Cyber'];
+let pi=0,ci=0,del=false;
+const tel=document.getElementById('typed-text');
+function type(){if(!tel)return;const p=phrases[pi];if(!del){tel.textContent=p.slice(0,ci++);if(ci>p.length){del=true;setTimeout(type,2000);return;}}else{tel.textContent=p.slice(0,ci--);if(ci<0){del=false;pi=(pi+1)%phrases.length;ci=0;}}setTimeout(type,del?35:80);}
+setTimeout(type,2000);
+
+// ============================================================
+// LOADER
+// ============================================================
+const loaderTexts=['INITIALIZING SYSTEMS...','LOADING CYBER MATRIX...','VERIFYING CREDENTIALS...','WELCOME ABOARD'];
+let li=0;
+const lt=document.getElementById('loader-text');
+function nextLoader(){if(li<loaderTexts.length-1){li++;lt.textContent=loaderTexts[li];setTimeout(nextLoader,400);}else{setTimeout(()=>{document.getElementById('loader').style.opacity='0';setTimeout(()=>{document.getElementById('loader').style.display='none';initAll();},500);},600);}}
+setTimeout(nextLoader,300);
+
+function initAll(){
+  renderAll();
+  reobserve();
+  gsap&&gsap.to('.hero-eyebrow',{opacity:1,y:0,duration:.6,delay:.2});
+  gsap&&gsap.to('.hero-name',{opacity:1,y:0,duration:.7,delay:.4});
+  gsap&&gsap.to('.hero-typed',{opacity:1,y:0,duration:.6,delay:.6});
+  gsap&&gsap.to('.hero-desc',{opacity:1,y:0,duration:.6,delay:.8});
+  gsap&&gsap.to('.hero-btns',{opacity:1,y:0,duration:.6,delay:1.0});
+}
+
+function handleContact(){
+  const btn=document.querySelector('.cf-submit');
+  btn.textContent='✓ MESSAGE TRANSMITTED';btn.style.background='var(--green)';btn.style.color='var(--bg)';
+  setTimeout(()=>{btn.textContent='⚡ TRANSMIT MESSAGE';btn.style.background='';btn.style.color='var(--green)';},3000);
+}
+</script>
+</body>
+</html>
