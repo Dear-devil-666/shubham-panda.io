@@ -1,26 +1,6 @@
 # Shubham Panda — Cybersecurity Portfolio
 
-**Live URL after deploy:** `https://shubham-panda.github.io`
-
-## 🚀 Deploy Options
-
-### Option 1: GitHub Pages (FREE — Recommended)
-1. Go to github.com → New Repository
-2. Name it exactly: `shubham-panda.github.io`
-3. Upload `index.html`
-4. Go to Settings → Pages → Source: main branch
-5. Your site is live at `https://shubham-panda.github.io`
-
-### Option 2: Netlify (FREE — Drag & Drop)
-1. Go to netlify.com → Sign up free
-2. Drag the entire folder onto Netlify dashboard
-3. Get instant URL like `shubham-panda.netlify.app`
-4. Optional: add custom domain
-
-### Option 3: Vercel (FREE)
-1. Go to vercel.com → Sign up
-2. Import GitHub repo OR drag & drop
-3. Deploy → Live instantly
+**Live URL after deploy:** `https://shubham-panda.io`
 
 ## 📁 Files
 - `index.html` — Complete portfolio (all-in-one, no dependencies needed)
